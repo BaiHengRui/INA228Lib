@@ -138,7 +138,7 @@ public:
                    ina228_convTime_t tempConvTime = INA228_CONV_TIME_1052US,
                    ina228_mode_t mode = INA228_MODE_ALL_CONTINUOUS);
     
-    // Calibration: rShuntValue in ohms, iMaxCurrentExcepted in amperes
+    // Calibration: rShuntValue in ohms, iMaxCurrentExcepted in amperes, adcRange for setting power LSB (default ±163.84mV)
     bool calibrate(float rShuntValue, float iMaxCurrentExcepted, ina228_adc_range_t adcRange = ADC_RANGE_163_84mV);
     bool setMode(ina228_mode_t mode);
     // Read functions
