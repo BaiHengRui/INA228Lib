@@ -69,7 +69,7 @@ bool INA228::configure(ina228_averages_t avg, ina228_convTime_t busConvTime,
     return true;
 }
 
-bool INA228::calibrate(float rShuntValue, float iMaxCurrentExpected) {
+bool INA228::calibrate(float rShuntValue, float iMaxCurrentExpected, ina228_adc_range_t adcRange) {
     rShunt = rShuntValue;
 
     // Calculate Current_LSB based on maximum expected current
@@ -80,13 +80,26 @@ bool INA228::calibrate(float rShuntValue, float iMaxCurrentExpected) {
     // Power_LSB = 3.2 * Current_LSB (from datasheet section 8.1.4)
     powerLSB = 3.2f * currentLSB;
 
+    // Calculate expected maximum shunt voltage
+    // V_shunt_max = I_max * R_shunt
+    float maxShuntVoltage = iMaxCurrentExpected * rShuntValue;
+
+    // Determine optimal ADC range
+    // ADCRANGE = 0: ±163.84mV range (LSB = 312.5 nV) - for higher currents
+    // ADCRANGE = 1: ±40.96mV range (LSB = 78.125 nV) - for lower currents with better resolution
+    ina228_adc_range_t selectedRange = adcRange;
+
+    // Set the ADC range
+    if (!setADCRange(selectedRange)) {
+        return false;
+    }
+
     // Calculate SHUNT_CAL register value
     // SHUNT_CAL = 13107.2e6 * Current_LSB * R_shunt (from datasheet section 8.1.2)
     // Note: When ADCRANGE=1, multiply by 4
-    uint16_t adcRange = (readConfig() >> 4) & 0x01;
     float shuntCal = 13107.2e6f * currentLSB * rShunt;
 
-    if (adcRange == 1) {
+    if (selectedRange == ADC_RANGE_40_96mV) {
         shuntCal *= 4.0f;
     }
 
@@ -394,16 +407,13 @@ bool INA228::resetAccumulation() {
 }
 
 // Set ADC range
-// false = ±163.84mV (ADCRANGE=0), true = ±40.96mV (ADCRANGE=1)
-bool INA228::setADCRange(bool range) {
+bool INA228::setADCRange(ina228_adc_range_t range) {
     uint16_t config = readConfig();
-
-    if (range) {
+    if (range == ADC_RANGE_40_96mV) {
         config |= INA228_CONFIG_ADCRANGE;
     } else {
         config &= ~INA228_CONFIG_ADCRANGE;
     }
-
     return writeRegister16(INA228_REG_CONFIG, config);
 }
 

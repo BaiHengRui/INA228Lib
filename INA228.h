@@ -117,6 +117,13 @@ typedef enum {
     INA228_MODE_SHUNT_TEMP_CONTINUOUS   = 0xE,   // Shunt + temperature, continuous
     INA228_MODE_ALL_CONTINUOUS          = 0xF,   // Bus + shunt + temperature, continuous
 } ina228_mode_t;
+
+// Threshold limit functions
+typedef enum {
+    ADC_RANGE_163_84mV = 0,   // ADCRANGE = 0, ±163.84 mV, LSB = 312.5 nV
+    ADC_RANGE_40_96mV  = 1    // ADCRANGE = 1, ±40.96 mV, LSB = 78.125 nV
+} ina228_adc_range_t;
+
 class INA228 {
 public:
     explicit INA228(TwoWire &w);
@@ -132,7 +139,7 @@ public:
                    ina228_mode_t mode = INA228_MODE_ALL_CONTINUOUS);
     
     // Calibration: rShuntValue in ohms, iMaxCurrentExcepted in amperes
-    bool calibrate(float rShuntValue, float iMaxCurrentExcepted);
+    bool calibrate(float rShuntValue, float iMaxCurrentExcepted, ina228_adc_range_t adcRange = ADC_RANGE_163_84mV);
     bool setMode(ina228_mode_t mode);
     // Read functions
     float readBusVoltage();        // Volts
@@ -165,7 +172,7 @@ public:
     // CONFIG register functions
     bool reset();                    // Software reset
     bool resetAccumulation();        // Reset energy and charge accumulation
-    bool setADCRange(bool range);    // Set ADC range: false = ±163.84mV, true = ±40.96mV
+    bool setADCRange(ina228_adc_range_t range);     // Set ADC range (±163.84mV or ±40.96mV)
     uint16_t readConfig();           // Read CONFIG register
 
     // Read chip identification
