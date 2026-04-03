@@ -74,7 +74,7 @@ bool INA228::calibrate(float rShuntValue, float iMaxCurrentExpected, ina228_adc_
 
     // Calculate Current_LSB based on maximum expected current
     // Current_LSB = MaxCurrent / 2^19 (from datasheet section 8.1.2)
-    currentLSB = iMaxCurrentExpected * 1.9073486328125e-6f;  // iMaxCurrentExpected * 2^-19
+    currentLSB = iMaxCurrentExpected * 1.9073486328125e-6f;
 
     // Calculate Power_LSB
     // Power_LSB = 3.2 * Current_LSB (from datasheet section 8.1.4)
@@ -101,6 +101,11 @@ bool INA228::calibrate(float rShuntValue, float iMaxCurrentExpected, ina228_adc_
 
     if (selectedRange == ADC_RANGE_40_96mV) {
         shuntCal *= 4.0f;
+    }
+
+    // Check SHUNT_CAL overflow (16-bit register, max value 65535)
+    if (shuntCal > 65535.0f) {
+        return false;
     }
 
     return writeRegister16(INA228_REG_SHUNT_CAL, (uint16_t)shuntCal);
