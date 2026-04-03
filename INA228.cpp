@@ -97,6 +97,13 @@ bool INA228::calibrate(float rShuntValue, float iMaxCurrentExpected, ina228_adc_
     // Calculate SHUNT_CAL register value
     // SHUNT_CAL = 13107.2e6 * Current_LSB * R_shunt (from datasheet section 8.1.2)
     float shuntCal = 13107.2e6f * currentLSB * rShunt;
+    // Unknown factor of four (from datasheet section 8.1.2)
+    // When ADCRANGE = 1, multiply by 4
+    // But multiply by 4 can;t read the right current adn power value
+    
+    // if (adcRange == ADC_RANGE_40_96mV) {
+    //     shuntCal *= 4.0f;
+    // }
 
     // Check SHUNT_CAL overflow (16-bit register, max value 65535)
     if (shuntCal > 65535.0f) {
