@@ -15,7 +15,7 @@ void setup() {
     // Configure with 16 averages, 1052 µs conversion times, continuous mode
     ina.configure(INA228_AVERAGES_16, INA228_CONV_TIME_1052US,
                   INA228_CONV_TIME_1052US, INA228_CONV_TIME_1052US,
-                  INA228_MODE_CONTINUOUS);
+                  INA228_MODE_ALL_CONTINUOUS);
     
     // Calibrate with 0.01 ohm shunt and max current 5A
     // ina.calibrate(0.01, 5.0, ADC_RANGE_40_96mV);
