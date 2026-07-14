@@ -193,8 +193,8 @@ bool calibrate(float rShunt, float maxCurrent, ina228_adc_range_t range = ADC_RA
 
 ## ⚠️ 注意事项
 
-1. **先 calibrate 再 configure：** `calibrate()` 设置 ADCRANGE 和 SHUNT_CAL，`configure()` 设置转换参数。两者独立，顺序任意。
-2. **ADC 量程匹配：** 确保 `maxCurrent × rShunt` 在所选 ADC 量程内，否则需要调整参数。
+1. **calibrate 与 configure 相互独立：** `calibrate()` 操作 CONFIG（ADCRANGE）和 SHUNT_CAL 寄存器，`configure()` 操作 ADC_CONFIG 寄存器（平均次数、转换时间、模式），两者互不覆盖，调用顺序任意。
+2. **ADC 量程匹配：** 确保 $V_{shunt\_max} = I_{max} \times R_{shunt}$ 在所选 ADC 量程内（±163.84 mV 或 ±40.96 mV）。
 3. **能量/电荷累计：** 需要连续模式下运行，`resetAccumulation()` 可随时清零。
 
 ---
