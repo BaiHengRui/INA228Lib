@@ -26,7 +26,7 @@ void setup() {
     // Set shunt temperature coefficient
     // setShuntTemperatureCoefficient(value) value ppm/°C
     ina.setShuntTemperatureCoefficient(100);
-    ina.enableTemperatureCompensation();
+    ina.enableTemperatureCompensation(true);
     // Read IDs
     Serial.print("Manufacturer ID: 0x");
     Serial.println(ina.readManufacturerID(), HEX);
